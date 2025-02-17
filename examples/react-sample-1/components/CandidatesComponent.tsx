@@ -34,7 +34,7 @@ export const CandidatesComponent = () => {
   async function handleClick() {
     try {
       if(tonStakingClient !== undefined) {
-        const numLayer2s = await tonStakingClient.readContract({
+        const numLayer2s = await tonStakingClient.readContractWithName({
           contract: TONContractName.Layer2Registry,
           functionName: 'numLayer2s',
           args: []
@@ -51,7 +51,7 @@ export const CandidatesComponent = () => {
         }
 
         if(args.length > 0) {
-          const res1 = ( await tonStakingClient.multiReadContracts(
+          const res1 = ( await tonStakingClient.multiReadContractsWithName(
             { contracts: args }))?.map((v)=>v.result)
           // console.log(`layer2ByIndex: ${res1}`)
           setCandidates(res1)
@@ -81,7 +81,7 @@ export const CandidatesComponent = () => {
          <CardContent className="space-y-7">
            <div className="space-y-1">
              {candidates?.map((item) => (
-                <a
+                <a key={item}
                   target="_blank"
                   className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors"
                   onClick={()=>openCandidate(item)}
@@ -116,7 +116,7 @@ export const CandidatesComponent = () => {
                   key={item}
                   target="_blank"
                   className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors"
-                  onClick={openCandidate}
+                  onClick={()=>openCandidate(item)}
                 >
                   <span className="hover:mr-1 duration-300">{item}</span>
                   <ArrowRight className="h-5 w-5" />

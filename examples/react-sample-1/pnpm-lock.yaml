@@ -18,8 +18,8 @@ dependencies:
     specifier: ^5.62.7
     version: 5.66.3(react@19.0.0)
   '@tokamak-network/ton-staking-sdk':
-    specifier: 0.0.18
-    version: 0.0.18
+    specifier: 0.0.19
+    version: 0.0.19
   class-variance-authority:
     specifier: ^0.7.1
     version: 0.7.1
@@ -1623,8 +1623,8 @@ packages:
       react: 19.0.0
     dev: false
 
-  /@tokamak-network/ton-staking-sdk@0.0.18:
-    resolution: {integrity: sha512-XltLyACEJl6+8miYDYTaNEyO08mbQM13Ub+wMpF0b+MOltpVuL3k8skyEyLSd2n3/UgA3CJLxcZzs7SiKSAFNA==}
+  /@tokamak-network/ton-staking-sdk@0.0.19:
+    resolution: {integrity: sha512-d5ELhz0d06I7L1hycjTk8c9CoR9QtEre3k937xsNwoYzgr0Ljk8Em9Ik6bLaQLmqTJ20Pc2l9yRwOc8Pla/Hpg==}
     dev: false
 
   /@types/debug@4.1.12:

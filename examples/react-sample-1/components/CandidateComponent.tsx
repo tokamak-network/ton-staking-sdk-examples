@@ -27,7 +27,7 @@ export const CandidateComponent = (props: CandidatePropsInterface) => {
   let tonStakingClient: ITonStakingClient
 
   const [candidate, setCandidate] = useState<string | null>(null);
-  const [totalStakers, setTotalStakers] = useState<bigint>(BigInt(0));
+  const [operator, setOperator] = useState<string | null>(null);
   const [totalStakedAmount, setTotalStakedAmount] = useState<bigint>(BigInt(0));
   const [totalPendingWithdrawalAmount, setTotalPendingWithdrawalAmount] = useState<bigint>(BigInt(0));
   const [lastUpdateSeigniorageTx, setLastUpdateSeigniorageTx] = useState<string | null>(null)
@@ -44,44 +44,62 @@ export const CandidateComponent = (props: CandidatePropsInterface) => {
   }, [context?.state.tonStakingClient])
 
   useEffect(() => {
+    console.log('useEffect candidateAddress')
     setCandidate(candidateAddress);
   }, [candidateAddress])
 
   useEffect(() => {
+    console.log('useEffect candidate')
     tonStakingClient = context?.state.tonStakingClient
     if(tonStakingClient != null) {
-
+      getCandidateInfos()
     }
   }, [candidate])
 
-  async function handleClick() {
+  async function getCandidateInfos() {
+    console.log('getCandidateInfos', candidate)
     try {
-      if(tonStakingClient !== undefined) {
-        const numLayer2s = await tonStakingClient.readContract({
-          contract: TONContractName.Candidate,
-          functionName: 'numLayer2s',
-          args: []
-        })
-        setNumLayer2s(numLayer2s)
+      if(tonStakingClient !== undefined && candidate != null) {
 
-        const args = []
-        for (let i=0; i< numLayer2s; i++) {
-          args.push({
-              contract: TONContractName.Layer2Registry,
-              functionName: 'layer2ByIndex',
-              args: [i]
-          })
-        }
-
-        if(args.length > 0) {
-          const res1 = ( await tonStakingClient.multiReadContracts(
-            { contracts: args }))?.map((v)=>v.result)
-          // console.log(`layer2ByIndex: ${res1}`)
-          setCandidates(res1)
-        }
+        const contractInfo = await tonStakingClient.getContractInfos()
+        const candidateDetailed = await tonStakingClient.multiReadContracts(
+          {
+            contracts: [
+              {
+                address: candidate,
+                abi: contractInfo.Candidate.abi,
+                functionName: 'operator',
+                args: []
+              },
+              {
+                address: candidate,
+                abi: contractInfo.Candidate.abi,
+                functionName: 'totalStaked',
+                args: []
+              },
+              {
+                address: contractInfo.DepositManager.address,
+                abi: contractInfo.DepositManager.abi,
+                functionName: 'pendingUnstakedLayer2',
+                args: [candidate]
+              },
+              {
+                address: contractInfo.SeigManager.address,
+                abi: contractInfo.SeigManager.abi,
+                functionName: 'stakeOf',
+                args: [candidate, address]
+              }
+            ]
+          }
+        )
+        // console.log(candidateDetailed)
+        setOperator(candidateDetailed[0].status=="success"?candidateDetailed[0].result:BigInt(0))
+        setTotalStakedAmount(candidateDetailed[1].status=="success"?candidateDetailed[1].result:BigInt(0))
+        setTotalPendingWithdrawalAmount(candidateDetailed[2].status=="success"?candidateDetailed[2].result:BigInt(0))
+        setMyStakedAmount(candidateDetailed[3].status=="success"?candidateDetailed[3].result:BigInt(0))
       }
     } catch (error) {
-      // console.log(`handleClick failed: ${error}`)
+      console.log(`getCandidateInfos failed: ${error}`)
     }
   }
 
@@ -101,30 +119,27 @@ export const CandidateComponent = (props: CandidatePropsInterface) => {
                    <div className="space-y-1">
                       <h3 className="text-lg font-semibold"> </h3>
                       <div className="space-y-2">
-                      {candidate}
+                      candidate: {candidate} <br/>
+                      operator: {operator}
                       </div>
                     </div>
                     <div className="space-y-1">
                       <h3 className="text-lg font-semibold">TON Staked</h3>
                       <div className="space-y-2">
                         <a className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors">
-                            <span className="hover:mr-1 duration-300"> Totak stakers {totalStakers}</span>
+                            <span className="hover:mr-1 duration-300"> - Total Staked Amount {totalStakedAmount}</span>
                             <ArrowRight className="h-5 w-5" />
                         </a>
                         <a className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors">
-                            <span className="hover:mr-1 duration-300"> Totak Staked Amount {totalStakedAmount}</span>
+                            <span className="hover:mr-1 duration-300"> - Total Pending Withdrawals {totalPendingWithdrawalAmount}</span>
                             <ArrowRight className="h-5 w-5" />
                         </a>
                         <a className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors">
-                            <span className="hover:mr-1 duration-300"> Total Pending Withdrawals {totalPendingWithdrawalAmount}</span>
+                            <span className="hover:mr-1 duration-300"> - Last Update Seigniorage {lastUpdateSeigniorageTx}</span>
                             <ArrowRight className="h-5 w-5" />
                         </a>
                         <a className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors">
-                            <span className="hover:mr-1 duration-300"> Last Update Seigniorage {lastUpdateSeigniorageTx}</span>
-                            <ArrowRight className="h-5 w-5" />
-                        </a>
-                        <a className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors">
-                            <span className="hover:mr-1 duration-300"> Latest Transactions {latestTransactions}</span>
+                            <span className="hover:mr-1 duration-300"> - Latest Transactions {latestTransactions}</span>
                             <ArrowRight className="h-5 w-5" />
                         </a>
                       </div>
@@ -133,15 +148,15 @@ export const CandidateComponent = (props: CandidatePropsInterface) => {
                       <h3 className="text-lg font-semibold">My Staked</h3>
                       <div className="space-y-1">
                         <a className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors">
-                            <span className="hover:mr-1 duration-300"> My Staked Amount {myStakedAmount}</span>
+                            <span className="hover:mr-1 duration-300"> - My Staked Amount {myStakedAmount}</span>
                             <ArrowRight className="h-5 w-5" />
                         </a>
                         <a className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors">
-                            <span className="hover:mr-1 duration-300"> Unclaimed Staking Amount {myUnclaimedAmount}</span>
+                            <span className="hover:mr-1 duration-300"> - Unclaimed Staking Amount {myUnclaimedAmount}</span>
                             <ArrowRight className="h-5 w-5" />
                         </a>
                         <a className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors">
-                            <span className="hover:mr-1 duration-300"> My Withdrawable Amount {myWithdrawableAmount}</span>
+                            <span className="hover:mr-1 duration-300"> - My Withdrawable Amount {myWithdrawableAmount}</span>
                             <ArrowRight className="h-5 w-5" />
                         </a>
                       </div>
@@ -166,15 +181,15 @@ export const CandidateComponent = (props: CandidatePropsInterface) => {
           <h3 className="text-lg font-semibold">TON Staked</h3>
           <div className="space-y-2">
             <a className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors">
-                <span className="hover:mr-1 duration-300"> Totak stakers</span>
+                <span className="hover:mr-1 duration-300"> - Total Staked Amount </span>
                 <ArrowRight className="h-5 w-5" />
             </a>
             <a className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors">
-                <span className="hover:mr-1 duration-300"> Pending Withdrawals</span>
+                <span className="hover:mr-1 duration-300"> - Pending Withdrawals</span>
                 <ArrowRight className="h-5 w-5" />
             </a>
             <a className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors">
-                <span className="hover:mr-1 duration-300"> Last Update Seigniorage</span>
+                <span className="hover:mr-1 duration-300"> - Last Update Seigniorage</span>
                 <ArrowRight className="h-5 w-5" />
             </a>
             <a className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors">
@@ -220,19 +235,19 @@ export const CandidateComponent = (props: CandidatePropsInterface) => {
                       <h3 className="text-lg font-semibold">TON Staked</h3>
                       <div className="space-y-2">
                         <a className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors">
-                            <span className="hover:mr-1 duration-300"> Totak stakers</span>
+                            <span className="hover:mr-1 duration-300"> - Total Staked Amount</span>
                             <ArrowRight className="h-5 w-5" />
                         </a>
                         <a className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors">
-                            <span className="hover:mr-1 duration-300"> Pending Withdrawals</span>
+                            <span className="hover:mr-1 duration-300"> - Pending Withdrawals</span>
                             <ArrowRight className="h-5 w-5" />
                         </a>
                         <a className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors">
-                            <span className="hover:mr-1 duration-300"> Last Update Seigniorage</span>
+                            <span className="hover:mr-1 duration-300"> - Last Update Seigniorage</span>
                             <ArrowRight className="h-5 w-5" />
                         </a>
                         <a className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors">
-                            <span className="hover:mr-1 duration-300"> Latest Transactions</span>
+                            <span className="hover:mr-1 duration-300"> - Latest Transactions</span>
                             <ArrowRight className="h-5 w-5" />
                         </a>
                       </div>

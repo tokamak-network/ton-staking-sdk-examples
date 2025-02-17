@@ -64,7 +64,7 @@ export const TonComponent = () => {
   async function handleClick() {
     try {
       if(tonStaking !== undefined) {
-        const supply = await tonStaking.readContract({
+        const supply = await tonStaking.readContractWithName({
           contract: TONContractName.TON,
           functionName: 'totalSupply',
           args: []
@@ -74,7 +74,7 @@ export const TonComponent = () => {
         setTonTotalSupply(supply);
         setYourAccount(address+"")
         if(yourAccount !== undefined) {
-          const balance = await tonStaking.readContract({
+          const balance = await tonStaking.readContractWithName({
             contract: TONContractName.TON,
             functionName: 'balanceOf',
             args: [yourAccount]
