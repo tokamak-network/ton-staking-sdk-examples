@@ -1,0 +1,20 @@
+{
+  "name": "ton-staking-sdk-example-local",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@tokamak-network/ton-staking-sdk": "^0.0.18"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.7",
+    "viem": "^2.22.21",
+    "@types/node": "^22.13.1",
+    "prettier": "^3.4.2"
+  }
+}
