@@ -22,6 +22,7 @@ export const CandidatesComponent = () => {
   let tonStakingClient: ITonStakingClient
   const [candidates, setCandidates] = useState<Array<string> | null>(null);
   const [numLayer2s, setNumLayer2s] = useState<number>(0);
+  const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null);
 
   useEffect(() => {
     tonStakingClient = context?.state.tonStakingClient
@@ -61,8 +62,9 @@ export const CandidatesComponent = () => {
     }
   }
 
-  async function openCandidate() {
-    console.log(`openCandidate clicked`)
+  async function openCandidate(key:string) {
+    console.log(`openCandidate clicked`, key)
+    setSelectedCandidate(key);
   }
 
   if (isConnected) {
@@ -80,10 +82,9 @@ export const CandidatesComponent = () => {
            <div className="space-y-1">
              {candidates?.map((item) => (
                 <a
-                  key={item}
                   target="_blank"
                   className="flex items-center gap-2 w-fit text-white text-opacity-80 cursor-pointer transition-colors"
-                  onClick={openCandidate}
+                  onClick={()=>openCandidate(item)}
                 >
                   <span className="hover:mr-1 duration-300">{item}</span>
                   <ArrowRight className="h-5 w-5" />
@@ -92,7 +93,7 @@ export const CandidatesComponent = () => {
            </div>
          </CardContent>
        </Card>
-        <CandidateComponent/>
+        <CandidateComponent candidateAddress={selectedCandidate}/>
         </div>
     )
   }
@@ -124,7 +125,7 @@ export const CandidatesComponent = () => {
            </div>
          </CardContent>
        </Card>
-       <CandidateComponent/>
+       <CandidateComponent candidateAddress={selectedCandidate}/>
    </div>
     )
   }
@@ -155,7 +156,7 @@ export const CandidatesComponent = () => {
               </div>
             </CardContent>
           </Card>
-          <CandidateComponent/>
+          <CandidateComponent candidateAddress={selectedCandidate}/>
       </div>
     )
   }

@@ -17,7 +17,7 @@ const main = async () => {
     )
 
     //==============================
-    const data1 = await tsClient.readContract({
+    const data1 = await tsClient.readContractWithName({
         contract: ContractNames.TON,
         functionName: 'totalSupply',
       })
@@ -26,7 +26,7 @@ const main = async () => {
 
     //==============================
     const addr = '0x71a4bcdc06cf271344d65f7a7bba67bd6b005520'
-    const balance = await tsClient.readContract({
+    const balance = await tsClient.readContractWithName({
       contract: ContractNames.TON,
       functionName: 'balanceOf',
       args: [addr]
@@ -88,7 +88,7 @@ const main = async () => {
 
     //==============================
     let res1 =
-     ( await tsClient.multiReadContracts({
+     ( await tsClient.multiReadContractsWithName({
         contracts: [
           {
             contract: ContractNames.TON,
@@ -113,7 +113,7 @@ const main = async () => {
       })
     )?.map((v)=>v.result)
 
-    console.log(' multiReadContracts', res1)
+    console.log(' multiReadContractsWithName', res1)
 
     //==============================
     // const unwatch =  await tsClient.watchContractEvent({

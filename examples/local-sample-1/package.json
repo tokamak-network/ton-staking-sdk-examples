@@ -9,7 +9,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@tokamak-network/ton-staking-sdk": "^0.0.18"
+    "@tokamak-network/ton-staking-sdk": "^0.0.19"
   },
   "devDependencies": {
     "dotenv": "^16.4.7",

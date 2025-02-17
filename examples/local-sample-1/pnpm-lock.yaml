@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@tokamak-network/ton-staking-sdk':
-    specifier: ^0.0.18
-    version: 0.0.18
+    specifier: ^0.0.19
+    version: 0.0.19
 
 devDependencies:
   '@types/node':
@@ -60,8 +60,8 @@ packages:
       '@scure/base': 1.2.4
     dev: true
 
-  /@tokamak-network/ton-staking-sdk@0.0.18:
-    resolution: {integrity: sha512-XltLyACEJl6+8miYDYTaNEyO08mbQM13Ub+wMpF0b+MOltpVuL3k8skyEyLSd2n3/UgA3CJLxcZzs7SiKSAFNA==}
+  /@tokamak-network/ton-staking-sdk@0.0.19:
+    resolution: {integrity: sha512-d5ELhz0d06I7L1hycjTk8c9CoR9QtEre3k937xsNwoYzgr0Ljk8Em9Ik6bLaQLmqTJ20Pc2l9yRwOc8Pla/Hpg==}
     dev: false
 
   /@types/node@22.13.4:
